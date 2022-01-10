@@ -93,7 +93,9 @@ int main(void)
   MX_TIM1_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-
+__HAL_TIM_SET_PRESCALER(&htim1, SystemCoreClock / 1000000 - 1);
+__HAL_TIM_SetAutoreload(&htim1, 1500 - 1);
+HAL_TIM_Base_Start_IT(&htim1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
