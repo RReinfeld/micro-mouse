@@ -171,7 +171,7 @@ void TIM1_BRK_UP_TRG_COM_IRQHandler(void)
   /* USER CODE BEGIN TIM1_BRK_UP_TRG_COM_IRQn 1 */
   int i = 0;
   lre_stepper_setStep_side(i, 0);
-  lre_stepper_setStep_side(8-i, 1);
+  lre_stepper_setStep_side(7-i, 1);
   while(1){
     i++;
     if (i > 7) {
