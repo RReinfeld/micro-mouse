@@ -169,12 +169,14 @@ void TIM1_BRK_UP_TRG_COM_IRQHandler(void)
   /* USER CODE END TIM1_BRK_UP_TRG_COM_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_BRK_UP_TRG_COM_IRQn 1 */
-lre_stepper_setStep(i);
-  i++;
-
-  if (i > 7)
-  {
-    i = 0;
+  int i = 0;
+  lre_stepper_setStep_side(i, 0);
+  lre_stepper_setStep_side(8-i, 1);
+  while(1){
+    i++;
+    if (i > 7) {
+      i = 0;
+    }
   }
   /* USER CODE END TIM1_BRK_UP_TRG_COM_IRQn 1 */
 }
