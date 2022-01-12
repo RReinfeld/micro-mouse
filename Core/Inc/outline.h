@@ -46,14 +46,8 @@ int  translater(int(*pArrM)[2], int *orientation, int direction);
 //orientation is pointer to the orientation of the mouse
 //direction is is returned by the pathfinder
 
-//calls orientator to orient the mouse so that the following steps can assume the orientation
 //calls checker to check whether the mouse is in the middle of the cell, takes that in the account for moving to the next cell
 //updates orientation
-
-int orientator(void);
-
-//attempts to rotate the mouse so, that it is in line with the cell walls.
-//if inconclusive, returns to original oriantation
 
 int checker(void);
 
@@ -70,7 +64,10 @@ int motor(int (*pArrM)[2]);
 
 //moves motors accornig to pArrM
 
+void lre_stepper_setStep_side(int step, int side);
+//step is the set of the motor
+//int is side: 0 is left, 1 is right 
 
-
+//Sets the step of the chosen motor
 
 
