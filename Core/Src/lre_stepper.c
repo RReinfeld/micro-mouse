@@ -1,6 +1,5 @@
 #include "lre_stepper.h"
 #include "main.h"
-#include "outline.h"
 
 void lre_stepper_setStep(uint8_t step){
     switch (step)
@@ -97,6 +96,20 @@ void lre_stepper_setStep(uint8_t step){
         break;
     }
 }
+
+void rotate(uint8_t times){
+   int i = 0;
+   int rotations = 0;
+   lre_stepper_setStep_side(i, 0);
+   lre_stepper_setStep_side(7-i, 1);
+   while(rotations < times){
+      i++;
+      if (i > 7) {
+         i = 0;
+         rotations++;
+      }
+   }
+}  
 
 void lre_stepper_setStep_side(uint8_t step, uint8_t right){
    switch (step)

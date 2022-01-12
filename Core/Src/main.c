@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "lre_stepper.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -101,6 +102,9 @@ void process_uart(struct __UART_HandleTypeDef *huart)
         HAL_GPIO_WritePin(GPIOC, LD3_Pin | LD4_Pin | LD5_Pin | LD6_Pin, 1);
       else if (strcmp(arg, "off"))
         HAL_GPIO_WritePin(GPIOC, LD3_Pin | LD4_Pin | LD5_Pin | LD6_Pin, 0);  
+    }
+    else if (strcmp(cmd_string, "move")) {
+      rotate(10);
     }
 
     buf[i] = '\n';

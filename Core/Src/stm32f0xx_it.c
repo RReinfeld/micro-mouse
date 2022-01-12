@@ -21,6 +21,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f0xx_it.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -184,7 +185,7 @@ void TIM1_BRK_UP_TRG_COM_IRQHandler(void)
   /* USER CODE END TIM1_BRK_UP_TRG_COM_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_BRK_UP_TRG_COM_IRQn 1 */
-  int i = 0;
+/*  int i = 0;
   lre_stepper_setStep_side(i, 0);
   lre_stepper_setStep_side(7-i, 1);
   while(1){
@@ -192,7 +193,7 @@ void TIM1_BRK_UP_TRG_COM_IRQHandler(void)
     if (i > 7) {
       i = 0;
     }
-  }
+  }*/
   /* USER CODE END TIM1_BRK_UP_TRG_COM_IRQn 1 */
 }
 
