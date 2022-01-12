@@ -43,14 +43,17 @@
 TIM_HandleTypeDef htim1;
 
 UART_HandleTypeDef huart3;
+DMA_HandleTypeDef hdma_usart3_tx;
 
 /* USER CODE BEGIN PV */
-
+unsigned char uart_rx_buf[30] = "empty";
+int rx_cnt = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
@@ -59,7 +62,61 @@ static void MX_USART3_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int strcmp(char *str1, char *str2)
+{
+  int i=0;
+  while ((str1[i] != 0) && (str2[i] != 0)) {
+    if (str1[i] != str2[i])
+      return 0;
+    i++;
+  }
 
+  if (i!=0)
+    return 1;
+  if (str1[i] == str2[i])
+    return 1;
+  else
+    return 0;
+}
+
+void process_uart(struct __UART_HandleTypeDef *huart)
+{
+  const int length_str = sizeof("You said: ");
+  static unsigned char buf[50] = "You said: ";
+  static int i = length_str;
+
+  while (huart->Instance->ISR & USART_ISR_RXNE) {
+    buf[i] = huart->Instance->RDR;
+    i++;
+  }
+
+  if (buf[i-1] == '\r') {
+    char* cmd_string = &buf[length_str];
+    if (strcmp(cmd_string, "light")) {
+      char* arg = cmd_string + sizeof("light");
+
+      if (*arg == 0)
+        HAL_GPIO_TogglePin(GPIOC, LD3_Pin | LD4_Pin | LD5_Pin | LD6_Pin);
+      else if (strcmp(arg, "on"))
+        HAL_GPIO_WritePin(GPIOC, LD3_Pin | LD4_Pin | LD5_Pin | LD6_Pin, 1);
+      else if (strcmp(arg, "off"))
+        HAL_GPIO_WritePin(GPIOC, LD3_Pin | LD4_Pin | LD5_Pin | LD6_Pin, 0);  
+    }
+
+    buf[i] = '\n';
+    i++;
+    buf[i] = '\r';
+    i++;
+    //HAL_UART_Transmit(huart, buf, i, 1000);
+
+    i = length_str;
+    for (int j=i;j<sizeof(buf);j++)
+      buf[j] = 0;
+  }
+
+  //HAL_UART_Transmit_DMA(huart, buf, sizeof(i));
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -90,12 +147,18 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_TIM1_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 __HAL_TIM_SET_PRESCALER(&htim1, SystemCoreClock / 1000000 - 1);
 __HAL_TIM_SetAutoreload(&htim1, 1500 - 1);
 HAL_TIM_Base_Start_IT(&htim1);
+  huart3.RxISR = process_uart;
+
+  unsigned char lfcr[] = "\n\r";
+  unsigned char msg[] = "\n\rWall-E ready\n\r";
+  HAL_UART_Transmit_DMA(&huart3, msg, sizeof(msg));
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,6 +168,7 @@ HAL_TIM_Base_Start_IT(&htim1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -237,7 +301,7 @@ static void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 38400;
+  huart3.Init.BaudRate = 115200;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;
@@ -251,8 +315,30 @@ static void MX_USART3_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART3_Init 2 */
-
+  unsigned int trigger_char = 0x0D; // carriage return
+  CLEAR_BIT(huart3.Instance->CR1, USART_CR1_UE); // Reception must be disabled to set ADD bits
+  SET_BIT(huart3.Instance->CR2, USART_CR2_ADDM7); // Set Address detection to 7bit
+  huart3.Instance->CR2 |= trigger_char << USART_CR2_ADD_Pos;
+  SET_BIT(huart3.Instance->CR1, USART_CR1_UE); // And enable Reception again
+  SET_BIT(huart3.Instance->CR1, USART_CR1_CMIE); // Interrupt on trigger_char
+  SET_BIT(huart3.Instance->CR1, USART_CR1_RXNEIE); // Interrupt on Reception
   /* USER CODE END USART3_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel2_3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel2_3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
 
 }
 
