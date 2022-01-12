@@ -97,12 +97,27 @@ void lre_stepper_setStep(uint8_t step){
     }
 }
 
-void rotate(uint8_t times){
+void rotate(uint32_t times){
    int i = 0;
    int rotations = 0;
-   lre_stepper_setStep_side(i, 0);
-   lre_stepper_setStep_side(7-i, 1);
    while(rotations < times){
+      lre_stepper_setStep_side(i, 0);
+      lre_stepper_setStep_side(7-i, 1); 
+      i++;
+      if (i > 7) {
+         i = 0;
+         rotations++;
+      }
+      HAL_Delay(1);
+   }
+}  
+
+void forward(uint32_t times){
+   int i = 0;
+   int rotations = 0;
+   while(rotations < times){
+      lre_stepper_setStep_side(i, 0);
+      lre_stepper_setStep_side(i, 1); 
       i++;
       if (i > 7) {
          i = 0;
@@ -110,6 +125,7 @@ void rotate(uint8_t times){
       }
    }
 }  
+
 
 void lre_stepper_setStep_side(uint8_t step, uint8_t right){
    switch (step)

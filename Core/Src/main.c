@@ -49,6 +49,7 @@ DMA_HandleTypeDef hdma_usart3_tx;
 /* USER CODE BEGIN PV */
 unsigned char uart_rx_buf[30] = "empty";
 int rx_cnt = 0;
+volatile uint8_t move = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -104,14 +105,15 @@ void process_uart(struct __UART_HandleTypeDef *huart)
         HAL_GPIO_WritePin(GPIOC, LD3_Pin | LD4_Pin | LD5_Pin | LD6_Pin, 0);  
     }
     else if (strcmp(cmd_string, "move")) {
-      rotate(10);
+      move = 1;
     }
 
     buf[i] = '\n';
     i++;
     buf[i] = '\r';
     i++;
-    //HAL_UART_Transmit(huart, buf, i, 1000);
+
+    HAL_UART_Transmit(huart, buf, i, 1000);
 
     i = length_str;
     for (int j=i;j<sizeof(buf);j++)
@@ -169,6 +171,11 @@ HAL_TIM_Base_Start_IT(&htim1);
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    if (move)
+    {
+      rotate(100000);
+      move = 0;
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
