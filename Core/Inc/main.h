@@ -50,8 +50,6 @@ extern "C" {
 
 /* USER CODE END EM */
 
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -76,17 +74,16 @@ void Error_Handler(void);
 #define MEMS_INT2_GPIO_Port GPIOC
 #define B1_Pin GPIO_PIN_0
 #define B1_GPIO_Port GPIOA
+#define ECHO_RIGHT_Pin GPIO_PIN_1
+#define ECHO_RIGHT_GPIO_Port GPIOA
+#define ECHO_BACK_Pin GPIO_PIN_5
+#define ECHO_BACK_GPIO_Port GPIOA
 #define EXT_RESET_Pin GPIO_PIN_5
 #define EXT_RESET_GPIO_Port GPIOC
 #define ECHO_FRONT_Pin GPIO_PIN_10
 #define ECHO_FRONT_GPIO_Port GPIOB
-#define ECHO_FRONT_EXTI_IRQn EXTI4_15_IRQn
 #define ECHO_LEFT_Pin GPIO_PIN_11
 #define ECHO_LEFT_GPIO_Port GPIOB
-#define ECHO_LEFT_EXTI_IRQn EXTI4_15_IRQn
-#define ECHO_RIGHT_Pin GPIO_PIN_12
-#define ECHO_RIGHT_GPIO_Port GPIOB
-#define ECHO_RIGHT_EXTI_IRQn EXTI4_15_IRQn
 #define SPI2_SCK_Pin GPIO_PIN_13
 #define SPI2_SCK_GPIO_Port GPIOB
 #define SPI2_MISO_Pin GPIO_PIN_14
@@ -125,9 +122,6 @@ void Error_Handler(void);
 #define EngineL3_GPIO_Port GPIOB
 #define EngineL4_Pin GPIO_PIN_6
 #define EngineL4_GPIO_Port GPIOB
-#define ECHO_BACK_Pin GPIO_PIN_9
-#define ECHO_BACK_GPIO_Port GPIOB
-#define ECHO_BACK_EXTI_IRQn EXTI4_15_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
