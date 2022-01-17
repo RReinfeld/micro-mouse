@@ -66,7 +66,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *hcsr04_timer)
 				Difference_LEFT = (0xffff - IC_Val1_LEFT) + IC_Val2_LEFT;
 			}
 
-			Distance_LEFT = Difference_LEFT * 34.32/2; // Distance in µm
+			Distance_LEFT = Difference_LEFT * 343.2/2; // Distance in µm
 			Is_First_Captured_LEFT = 0; // set it back to false
 
 			// set polarity to rising edge
@@ -100,7 +100,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *hcsr04_timer)
 				Difference_BACK = (0xffff - IC_Val1_BACK) + IC_Val2_BACK;
 			}
 
-			Distance_BACK = Difference_BACK * 34.32/2;
+			Distance_BACK = Difference_BACK * 343.2/2;
 			Is_First_Captured_BACK = 0; // set it back to false
 
 			// set polarity to rising edge
@@ -134,7 +134,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *hcsr04_timer)
 				Difference_RIGHT = (0xffff - IC_Val1_RIGHT) + IC_Val2_RIGHT;
 			}
 
-			Distance_RIGHT = Difference_RIGHT * 34.32/2;
+			Distance_RIGHT = Difference_RIGHT * 343.2/2;
 			Is_First_Captured_RIGHT = 0; // set it back to false
 
 			// set polarity to rising edge
@@ -168,7 +168,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *hcsr04_timer)
 				Difference_LEFT = (0xffff - IC_Val1_LEFT) + IC_Val2_LEFT;
 			}
 
-			Distance_LEFT = Difference_LEFT * 34.32/2;
+			Distance_LEFT = Difference_LEFT * 343.2/2;
 			Is_First_Captured_LEFT = 0; // set it back to false
 
 			// set polarity to rising edge
