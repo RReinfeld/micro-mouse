@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <Drivers/HCSR04.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -159,25 +159,32 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-__HAL_TIM_SET_PRESCALER(&htim1, SystemCoreClock / 1000000 - 1);
-__HAL_TIM_SetAutoreload(&htim1, 1500 - 1);
-HAL_TIM_Base_Start_IT(&htim1);
+  __HAL_TIM_SET_PRESCALER(&htim1, SystemCoreClock / 1000000 - 1);
+  __HAL_TIM_SetAutoreload(&htim1, 1500 - 1);
+  HAL_TIM_Base_Start_IT(&htim1);
   huart3.RxISR = process_uart;
 
   unsigned char lfcr[] = "\n\r";
   unsigned char msg[] = "\n\rWall-E ready\n\r";
   HAL_UART_Transmit_DMA(&huart3, msg, sizeof(msg));
+
+  HAL_TIM_Base_Start(&htim2);
+  HCSR04_Init(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint32_t distances[4];
   while (1)
   {
-    if (move)
+    /*if (move)
     {
       rotate(100000);
       move = 0;
-    }
+    }*/
+    HCSR04_Measure();
+    HAL_Delay(500);
+    HCSR04_Read(distances);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

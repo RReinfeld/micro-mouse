@@ -1,5 +1,4 @@
 #include <Drivers/HCSR04.h>
-#include <stm32f0xx_hal.h>
 
 /****************************************************************************************************************************
  * HCRS04 Sensor Driver
@@ -41,21 +40,54 @@ TIM_HandleTypeDef* htim;
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *hcsr04_timer)
 {
-    htim = hcsr04_timer;
-	//Sensor_BACK
+	//Sensor_LEFT
 	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)  // if the interrupt source is channel1
 	{
-		if (Is_First_Captured_BACK==0) // if the first value is not captured
+		if (Is_First_Captured_LEFT==0) // if the first value is not captured
 		{
-			IC_Val1_BACK = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); // read the first value
-			Is_First_Captured_BACK = 1;  // set the first captured as true
+			IC_Val1_LEFT = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); // read the first value
+			Is_First_Captured_LEFT = 1;  // set the first captured as true
 			// Now change the polarity to falling edge
 			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
 		}
 
+		else if (Is_First_Captured_LEFT==1)   // if the first is already captured
+		{
+			IC_Val2_LEFT = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);  // read second value
+			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
+
+			if (IC_Val2_LEFT > IC_Val1_LEFT)
+			{
+				Difference_LEFT = IC_Val2_LEFT-IC_Val1_LEFT;
+			}
+
+			else if (IC_Val1_LEFT > IC_Val2_LEFT)
+			{
+				Difference_LEFT = (0xffff - IC_Val1_LEFT) + IC_Val2_LEFT;
+			}
+
+			Distance_LEFT = Difference_LEFT * 34.32/2; // Distance in µm
+			Is_First_Captured_LEFT = 0; // set it back to false
+
+			// set polarity to rising edge
+			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
+			__HAL_TIM_DISABLE_IT(htim, TIM_IT_CC1);
+		}
+	}
+	//Sensor_RIGHT
+	else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  // if the interrupt source is channel2
+	{
+		if (Is_First_Captured_BACK==0) // if the first value is not captured
+		{
+			IC_Val1_BACK = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); // read the first value
+			Is_First_Captured_BACK = 1;  // set the first captured as true
+			// Now change the polarity to falling edge
+			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
+		}
+
 		else if (Is_First_Captured_BACK==1)   // if the first is already captured
 		{
-			IC_Val2_BACK = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);  // read second value
+			IC_Val2_BACK = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);  // read second value
 			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
 
 			if (IC_Val2_BACK > IC_Val1_BACK)
@@ -68,28 +100,28 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *hcsr04_timer)
 				Difference_BACK = (0xffff - IC_Val1_BACK) + IC_Val2_BACK;
 			}
 
-			Distance_BACK = Difference_BACK * 34.32/2; // Distance in µm
+			Distance_BACK = Difference_BACK * 34.32/2;
 			Is_First_Captured_BACK = 0; // set it back to false
 
 			// set polarity to rising edge
-			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
-			__HAL_TIM_DISABLE_IT(htim, TIM_IT_CC1);
+			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
+			__HAL_TIM_DISABLE_IT(htim, TIM_IT_CC2);
 		}
 	}
 	//Sensor_RIGHT
-	else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  // if the interrupt source is channel2
+	else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)  // if the interrupt source is channel3
 	{
 		if (Is_First_Captured_RIGHT==0) // if the first value is not captured
 		{
-			IC_Val1_RIGHT = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); // read the first value
+			IC_Val1_RIGHT = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_3); // read the first value
 			Is_First_Captured_RIGHT = 1;  // set the first captured as true
 			// Now change the polarity to falling edge
-			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
+			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_3, TIM_INPUTCHANNELPOLARITY_FALLING);
 		}
 
 		else if (Is_First_Captured_RIGHT==1)   // if the first is already captured
 		{
-			IC_Val2_RIGHT = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);  // read second value
+			IC_Val2_RIGHT = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);  // read second value
 			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
 
 			if (IC_Val2_RIGHT > IC_Val1_RIGHT)
@@ -104,40 +136,6 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *hcsr04_timer)
 
 			Distance_RIGHT = Difference_RIGHT * 34.32/2;
 			Is_First_Captured_RIGHT = 0; // set it back to false
-
-			// set polarity to rising edge
-			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
-			__HAL_TIM_DISABLE_IT(htim, TIM_IT_CC2);
-		}
-	}
-	//Sensor_FRONT
-	else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)  // if the interrupt source is channel3
-	{
-		if (Is_First_Captured_FRONT==0) // if the first value is not captured
-		{
-			IC_Val1_FRONT = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_3); // read the first value
-			Is_First_Captured_FRONT = 1;  // set the first captured as true
-			// Now change the polarity to falling edge
-			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_3, TIM_INPUTCHANNELPOLARITY_FALLING);
-		}
-
-		else if (Is_First_Captured_FRONT==1)   // if the first is already captured
-		{
-			IC_Val2_FRONT = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);  // read second value
-			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
-
-			if (IC_Val2_FRONT > IC_Val1_FRONT)
-			{
-				Difference_FRONT = IC_Val2_FRONT-IC_Val1_FRONT;
-			}
-
-			else if (IC_Val1_FRONT > IC_Val2_FRONT)
-			{
-				Difference_FRONT = (0xffff - IC_Val1_FRONT) + IC_Val2_FRONT;
-			}
-
-			Distance_FRONT = Difference_FRONT * 34.32/2;
-			Is_First_Captured_FRONT = 0; // set it back to false
 
 			// set polarity to rising edge
 			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_3, TIM_INPUTCHANNELPOLARITY_RISING);
@@ -179,6 +177,11 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *hcsr04_timer)
 		}
 	}
 
+}
+
+void HCSR04_Init (TIM_HandleTypeDef *hcsr04_timer)
+{
+	htim = hcsr04_timer;
 }
 
 void delay (uint16_t time)

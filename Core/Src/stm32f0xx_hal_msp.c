@@ -117,14 +117,14 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     PB10     ------> TIM2_CH3
     PB11     ------> TIM2_CH4
     */
-    GPIO_InitStruct.Pin = ECHO_RIGHT_Pin|ECHO_BACK_Pin;
+    GPIO_InitStruct.Pin = ECHO_BACK_Pin|ECHO_LEFT_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF2_TIM2;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = ECHO_FRONT_Pin|ECHO_LEFT_Pin;
+    GPIO_InitStruct.Pin = ECHO_FRONT_Pin|ECHO_RIGHT_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -177,9 +177,9 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
     PB10     ------> TIM2_CH3
     PB11     ------> TIM2_CH4
     */
-    HAL_GPIO_DeInit(GPIOA, ECHO_RIGHT_Pin|ECHO_BACK_Pin);
+    HAL_GPIO_DeInit(GPIOA, ECHO_BACK_Pin|ECHO_LEFT_Pin);
 
-    HAL_GPIO_DeInit(GPIOB, ECHO_FRONT_Pin|ECHO_LEFT_Pin);
+    HAL_GPIO_DeInit(GPIOB, ECHO_FRONT_Pin|ECHO_RIGHT_Pin);
 
     /* TIM2 interrupt DeInit */
     HAL_NVIC_DisableIRQ(TIM2_IRQn);
